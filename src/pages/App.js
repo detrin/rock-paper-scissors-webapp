@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Button } from "@/pages/ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function App() {
   const [history, setHistory] = useState([]);
