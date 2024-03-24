@@ -1,21 +1,30 @@
-# Rock-Paper-Scissors Webapp Using Multi-Armed Bandit Strategy
-This project is a simple, engaging web-based game of Rock-Paper-Scissors.
+# Rock, Paper, Scissors with TensorFlow.js
 
 [Vercel webapp](https://rock-paper-scissors-webapp-r5up.vercel.app) | [Github repo](https://github.com/detrin/rock-paper-scissors-webapp)
 
-## Multi-Armed Bandit
-In probability theory, the problem of the Multi-Armed Bandit involves a gambler who decides which arms to pull on a slot machine with several levers, each providing a distinct and unknown reward distribution. The ultimate goal is to determine a strategy that optimizes pulling the levers to produce the greatest total benefit.
+This project presents an implementation of a web-based game of Rock, Paper, Scissors against the computer powered by `TensorFlow.js`; a library for machine learning in JavaScript. 
 
-In the context of our Rock-Paper-Scissors game, the different "arms" or choices are "rock", "paper", and "scissors". The application utilizes this strategy to decide the next move of the computer.
+## Description
 
-## Decision Algorithm
-The decision-making process is grounded in the Multi-Armed Bandit strategy. It performs in two steps:
+Using `React` for building the web interface and TensorFlow.js for crafting the game logic, we built an interactive game that makes use of Tensorflow's machine learning capabilities to train a model for the computer's moves.
 
-1. If a random number generated between 0 (inclusive) and 1 (exclusive) is less than epsilon (i.e., within our 20% band), the computer makes a randomized decision, not based on any previous history or learned behavior, to facilitate exploration.
-2. Alternatively, when the random number surpasses epsilon, the algorithm proceeds to choose the option with the highest estimated reward, reinforcing what we've learned and established as the best choice from experience so far.
+### Neural Network
 
-## Updating the Bandits
-In each round, the updateBandits function adjusts the 'bandits' scores based on the game's outcome:
+In essence, the computer analyzes the human player's past moves and trains itself to predict the next move. Specifically, the network we used is a simple sequential model in TensorFlow.js. 
 
-- If the result of the round is "You win!", the 'bandits' failure count corresponding to the used move is increased by one.
-- On the contrary, if the result is "You lose!", the 'bandits' score corresponding to the used move is increased by one.
+The sequential model is a linear stack of layers that we can create using `tf.sequential()`. For this project:
+
+1. We defined a `Dense` layer taking in the `vector_len` (set to 4 past moves, implying dim=8) which incorporates human and computer past moves as the input shape. We used `ReLU` (Rectified Linear Unit) as the activation function for this layer, which provides the non-linearity needed for the model.
+
+2. Next, another `Dense` layer has been incorporated. Here, we indicated three units (corresponding to rock, paper, and scissors) and employed the `Softmax` activation function to assign probabilistic outputs to each class.
+
+3. For compiling the model, we employed the `Adam` optimizer and the `categoricalCrossentropy` loss function as they typically render good results for multiclass classification tasks such as this. The model's performance is measured using `accuracy`. When below 0.75 accuracy random move is selected.
+
+The model is then trained on a series of past moves with various configurations to improve its prediction capabilities.
+
+
+## Usage
+
+To play the game, just make your move by clicking either 'Rock', 'Paper' or 'Scissors'. The scores are updated and a history of all rounds is maintained. You can also reset the game at any point with the 'Reset' button.
+
+So, keep playing and enjoy a round of Rock, Paper, Scissors!
