@@ -48,8 +48,6 @@ export default function App() {
         }
       }
     }
-
-    console.log(maxBandit);
     return maxBandit;
   };
 
@@ -188,6 +186,31 @@ export default function App() {
                 .reverse()}
             </tbody>
           </table>
+        </div>
+        <div className="mt-8 text-center text-sm text-gray-600">
+          <p>
+            Made by{" "}
+            <a
+              href="https://www.hermandaniel.com"
+              target="_blank"
+              rel="noreferrer noopener"
+              style={{ color: "dodgerblue" }}
+            >
+              Daniel Herman
+            </a>
+          </p>
+          <p>
+            Check the code in this{" "}
+            <a
+              href="https://github.com/detrin/rock-paper-scissors-webapp"
+              target="_blank"
+              rel="noreferrer noopener"
+              style={{ color: "dodgerblue" }}
+            >
+              Github repo
+            </a>
+            .
+          </p>
         </div>
       </div>
     </div>
