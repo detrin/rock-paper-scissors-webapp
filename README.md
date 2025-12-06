@@ -1,6 +1,6 @@
 # Rock, Paper, Scissors - Meta-Strategy Bot
 
-[Vercel webapp](https://rock-paper-scissors-webapp-r5up.vercel.app) | [Github repo](https://github.com/detrin/rock-paper-scissors-webapp)
+[Vercel webapp](https://rock-paper-scissors-webapp.vercel.app) | [Github repo](https://github.com/detrin/rock-paper-scissors-webapp)
 
 This project presents an implementation of a web-based game of Rock, Paper, Scissors against an advanced AI bot powered by **meta-strategy** techniques inspired by legendary bots like **Iocaine Powder** (Dan Egnor) and **Greenberg** (Andrzej Nagorko).
 
