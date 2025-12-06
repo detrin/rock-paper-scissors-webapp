@@ -2,7 +2,7 @@
  * Advanced Rock-Paper-Scissors Bot
  * Based on Iocaine Powder and Greenberg meta-strategy approach
  * 
- * Implements multiple strategies with shadow predictors (P.0, P.1, P.2)
+ * Implements multiple strategies with shadow predictors (P.0, P.1, P.2, P'.0, P'.1, P'.2)
  * and a meta-strategy selector that tracks performance.
  */
 
@@ -37,7 +37,8 @@ class RPSBot {
     
     // Track performance of each strategy's shadow predictors
     // Format: { strategyIndex: { shadowLevel: score } }
-    // shadowLevel: 0 = Naive, 1 = Second-guess, 2 = Triple-guess
+    // shadowLevel: 0 = P.0 (Naive), 1 = P.1 (Second-guess), 2 = P.2 (Triple-guess)
+    // shadowLevel: 3 = P'.0 (Second-guess opponent), 4 = P'.1, 5 = P'.2
     this.strategyScores = {};
     this.initializeScores();
     
@@ -50,7 +51,7 @@ class RPSBot {
   
   initializeScores() {
     for (let i = 0; i < this.strategies.length; i++) {
-      this.strategyScores[i] = { 0: 0, 1: 0, 2: 0 };
+      this.strategyScores[i] = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     }
   }
   
@@ -92,11 +93,38 @@ class RPSBot {
       // We play the counter to their counter
       const move2 = this.beatenBy[this.beatenBy[move1]];
       
-      this.pendingPredictions[strategyIndex] = {
-        0: move0,
-        1: move1,
-        2: move2
-      };
+      // P'.0 (Second-guess the opponent): Assume opponent uses P against us
+      // Predict what we would play (using P on our own moves), then predict what opponent
+      // would play to beat that, then play the move that beats their move
+      const ourPrediction = this.predictOurMove(strategy);
+      if (ourPrediction) {
+        // Opponent would play the move that beats what we're predicted to play
+        const opponentCounter = this.beatenBy[ourPrediction];
+        // We play the move that beats their counter
+        const move3 = this.beatenBy[opponentCounter];
+        
+        // P'.1: Rotation of P'.0
+        const move4 = this.beatenBy[this.beatenBy[move3]];
+        
+        // P'.2: Rotation of P'.1
+        const move5 = this.beatenBy[this.beatenBy[move4]];
+        
+        this.pendingPredictions[strategyIndex] = {
+          0: move0,
+          1: move1,
+          2: move2,
+          3: move3,
+          4: move4,
+          5: move5
+        };
+      } else {
+        // If we can't predict our own move, only use P.0, P.1, P.2
+        this.pendingPredictions[strategyIndex] = {
+          0: move0,
+          1: move1,
+          2: move2
+        };
+      }
     }
     
     // Select best strategy and shadow level
@@ -120,8 +148,8 @@ class RPSBot {
     let bestShadow = 0;
     
     for (let strategyIndex = 0; strategyIndex < this.strategies.length; strategyIndex++) {
-      for (let shadowLevel = 0; shadowLevel <= 2; shadowLevel++) {
-        const score = this.strategyScores[strategyIndex][shadowLevel];
+      for (let shadowLevel = 0; shadowLevel <= 5; shadowLevel++) {
+        const score = this.strategyScores[strategyIndex][shadowLevel] || 0;
         if (score > bestScore) {
           bestScore = score;
           bestStrategy = strategyIndex;
@@ -163,8 +191,10 @@ class RPSBot {
       for (let strategyIndex in this.pendingPredictions) {
         const predictions = this.pendingPredictions[strategyIndex];
         
-        for (let shadowLevel = 0; shadowLevel <= 2; shadowLevel++) {
+        for (let shadowLevel in predictions) {
           const predictedMove = predictions[shadowLevel];
+          if (!predictedMove) continue;
+          
           let scoreChange = 0;
           
           if (predictedMove === winningMove) {
@@ -175,8 +205,8 @@ class RPSBot {
           // Tie = 0, no change
           
           // Update score with decay
-          this.strategyScores[strategyIndex][shadowLevel] = 
-            this.strategyScores[strategyIndex][shadowLevel] * 0.95 + scoreChange;
+          const currentScore = this.strategyScores[strategyIndex][shadowLevel] || 0;
+          this.strategyScores[strategyIndex][shadowLevel] = currentScore * 0.95 + scoreChange;
         }
       }
     }
@@ -186,6 +216,39 @@ class RPSBot {
   }
   
   // ========== STRATEGIES ==========
+  
+  /**
+   * Helper: Predict what we would play using a strategy
+   * This is used for P' variations - we apply the strategy to our own move history
+   * by swapping perspectives (our moves become "opponent" moves from their perspective)
+   */
+  predictOurMove(strategy) {
+    if (this.ourMoves.length < 2) return null;
+    
+    // Temporarily swap perspectives to predict our own moves
+    const originalHistory = this.history;
+    const originalOurMoves = this.ourMoves;
+    const originalResults = this.results;
+    
+    // Swap: from opponent's perspective, our moves are their "opponent" moves
+    this.history = this.ourMoves;
+    // Swap results: if we won, from their perspective they lost (and vice versa)
+    this.results = this.results.split('').map(r => {
+      if (r === 'W') return 'L';
+      if (r === 'L') return 'W';
+      return 'T';
+    }).join('');
+    
+    // Get prediction (what we would play from opponent's perspective)
+    const prediction = strategy.predict();
+    
+    // Restore original state
+    this.history = originalHistory;
+    this.ourMoves = originalOurMoves;
+    this.results = originalResults;
+    
+    return prediction;
+  }
   
   /**
    * Strategy 1: Random

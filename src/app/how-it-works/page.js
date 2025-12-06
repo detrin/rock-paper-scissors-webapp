@@ -48,8 +48,8 @@ export default function HowItWorks() {
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             This video explains how Iocaine Powder introduced the concept of meta-level thinking, 
-            where each predictor can operate at multiple levels (P.0, P.1, P.2) to counter opponents 
-            who try to outthink the strategy.
+            where each predictor can operate at multiple levels (P.0, P.1, P.2, P'.0, P'.1, P'.2) 
+            to counter opponents who try to outthink the strategy.
           </p>
         </section>
 
@@ -58,24 +58,61 @@ export default function HowItWorks() {
           <h2 className="text-2xl font-semibold">The Meta-Strategy Architecture</h2>
           <p className="text-gray-700 dark:text-gray-300">
             The bot uses a technique called <strong>Meta-Strategy</strong> where every predictor 
-            has multiple "shadow" predictors that think at different levels:
+            has multiple "shadow" predictors that think at different levels. Based on the legendary 
+            <strong> Iocaine Powder</strong> algorithm, each predictive algorithm P expands into six possible strategies:
           </p>
-          <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
-            <li>
-              <strong>P.0 (Naive)</strong>: The predictor says "Opponent will play Rock" → I play Paper
-            </li>
-            <li>
-              <strong>P.1 (Second-Guessing)</strong>: The opponent expects me to play Paper, so they 
-              will play Scissors → I play Rock to beat their Scissors
-            </li>
-            <li>
-              <strong>P.2 (Triple-Guessing)</strong>: The opponent expects me to play Rock, so they 
-              will play Paper → I play Scissors
-            </li>
-          </ul>
+          
+          <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">P.0 (Naive Application)</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                Assume the opponent is vulnerable to prediction by P; then predict the opponent's next move, 
+                and play accordingly to win. If P predicts your opponent will play Rock, play Paper to cover Rock. 
+                This is the obvious application of P.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold mb-2">P.1 (Defeat Second-Guessing)</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                Assume the opponent thinks you will use P.0. If P predicts Rock, P.0 would play Paper to cover Rock, 
+                but the opponent could anticipate this move and play Scissors to cut Paper. Instead, you play Rock to dull Scissors.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold mb-2">P.2 (Defeat Triple-Guessing)</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                Assume the opponent thinks you will use P.1. Your opponent thinks you will play Rock to dull the Scissors 
+                they would have played to cut the Paper you would have played to cover the Rock P would have predicted, 
+                so they will play Paper to cover your Rock. But you are one-up to them, and play Scissors to cut their Paper.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold mb-2">P'.0 (Second-Guess the Opponent)</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                This strategy assumes the opponent uses P themselves against you. We modify P to exchange the position 
+                of you and your opponent. If P' predicts that you will play Rock, you would expect your opponent to play Paper, 
+                but instead you play Scissors to cut their Paper.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold mb-2">P'.1 and P'.2 (Variations on a Theme)</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                As with P.1 and P.2, these represent "rotations" of the basic P'.0 idea, designed to counteract 
+                your opponent's second-guessing. These variations add additional layers of meta-thinking to handle 
+                opponents who try to outthink the P'.0 strategy.
+              </p>
+            </div>
+          </div>
+          
           <p className="text-gray-700 dark:text-gray-300">
             This multi-layered approach allows the bot to adapt to players who try to outthink it, 
-            automatically detecting and countering their level of strategic thinking.
+            automatically detecting and countering their level of strategic thinking. The bot tracks the performance 
+            of all six variations (P.0, P.1, P.2, P'.0, P'.1, P'.2) for each strategy and selects the best-performing 
+            combination in real-time.
           </p>
         </section>
 
