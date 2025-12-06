@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import RPSBot from "@/lib/RPSBot";
 
@@ -73,9 +74,16 @@ export default function App() {
             <span className="font-semibold text-lg">-</span>
             <span className="font-semibold text-2xl">{score.computer}</span>
           </div>
-          <Button size="sm" onClick={resetGame}>
-            Reset
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Link href="/how-it-works">
+              <Button size="sm" variant="outline">
+                How does it work?
+              </Button>
+            </Link>
+            <Button size="sm" onClick={resetGame}>
+              Reset
+            </Button>
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <Button
