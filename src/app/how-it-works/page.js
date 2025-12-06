@@ -26,6 +26,33 @@ export default function HowItWorks() {
           </p>
         </section>
 
+        {/* Video: Origin of Iocaine Powder */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold">The Origin: Meta-Strategy & Iocaine Powder</h2>
+          <p className="text-gray-700 dark:text-gray-300">
+            The most famous meta-strategy for computer Rock Paper Scissors is <strong>Iocaine Powder</strong>, 
+            named after the iconic scene in <em>The Princess Bride</em>, with its endless battle of wits. 
+            The basic insight is that any successful prediction (P) for your opponent's strategy can run 
+            at multiple meta-levels, creating shadow predictors that think at different depths.
+          </p>
+          <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
+            <div className="aspect-video w-full">
+              <iframe
+                className="w-full h-full rounded-lg"
+                src="https://www.youtube.com/embed/rMz7JBRbmNo"
+                title="The Origin of Meta-Strategy: Iocaine Powder"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            This video explains how Iocaine Powder introduced the concept of meta-level thinking, 
+            where each predictor can operate at multiple levels (P.0, P.1, P.2) to counter opponents 
+            who try to outthink the strategy.
+          </p>
+        </section>
+
         {/* Meta-Strategy Architecture */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold">The Meta-Strategy Architecture</h2>
