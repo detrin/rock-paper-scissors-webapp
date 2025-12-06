@@ -95,6 +95,33 @@ export default function App() {
     }
   };
 
+  const getResultType = (humanMove, computerMove) => {
+    if (
+      (humanMove === "rock" && computerMove === "scissors") ||
+      (humanMove === "paper" && computerMove === "rock") ||
+      (humanMove === "scissors" && computerMove === "paper")
+    ) {
+      return "win";
+    } else if (
+      (computerMove === "rock" && humanMove === "scissors") ||
+      (computerMove === "paper" && humanMove === "rock") ||
+      (computerMove === "scissors" && humanMove === "paper")
+    ) {
+      return "lose";
+    } else {
+      return "tie";
+    }
+  };
+
+  const getMoveEmoji = (move) => {
+    const emojis = {
+      rock: "🪨",
+      paper: "📄",
+      scissors: "✂️",
+    };
+    return emojis[move] || "";
+  };
+
   return (
     <div className="w-full px-4">
       <div className="max-w-3xl mx-auto py-6 space-y-6">
@@ -155,21 +182,21 @@ export default function App() {
             size="lg"
             onClick={() => handleClick(0)}
           >
-            Rock
+            🪨 Rock
           </Button>
           <Button
             className="col-span-1"
             size="lg"
             onClick={() => handleClick(1)}
           >
-            Paper
+            📄 Paper
           </Button>
           <Button
             className="col-span-1"
             size="lg"
             onClick={() => handleClick(2)}
           >
-            Scissors
+            ✂️ Scissors
           </Button>
         </div>
         <div className="border-t border-gray-200 dark:border-gray-800 w-full p-0">
@@ -188,11 +215,21 @@ export default function App() {
                   const human = ["rock", "paper", "scissors"][h.human];
                   const computer = ["rock", "paper", "scissors"][h.computer];
                   const result = getResult(human, computer);
+                  const resultType = getResultType(human, computer);
+                  const bgColorClass = {
+                    win: "bg-green-500/20",
+                    tie: "bg-orange-500/20",
+                    lose: "bg-red-500/20",
+                  }[resultType] || "";
                   return (
-                    <tr key={index}>
+                    <tr key={index} className={bgColorClass}>
                       <td className="border px-4 py-2">{h.round}</td>
-                      <td className="border px-4 py-2">{human}</td>
-                      <td className="border px-4 py-2">{computer}</td>
+                      <td className="border px-4 py-2">
+                        {getMoveEmoji(human)} {human}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {getMoveEmoji(computer)} {computer}
+                      </td>
                       <td className="border px-4 py-2">{result}</td>
                     </tr>
                   );
