@@ -1,34 +1,29 @@
 "use client";
 
-import * as tf from "@tensorflow/tfjs";
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import RPSBot from "@/lib/RPSBot";
 
 export default function App() {
-  const [model, setModel] = useState(null);
   const [history, setHistory] = useState([]);
   const [score, setScore] = useState({ human: 0, computer: 0 });
-  const [isTraining, setIsTraining] = useState(false);
-  const [vectorLength, setVectorLength] = useState(0);
+  const botRef = useRef(new RPSBot());
 
-  const vector_len = () => {
-    // return Math.floor(Math.log2(history.length + 1));
-    return 3;
-  };
-
-  const handleClick = async (humanMove) => {
+  const handleClick = (humanMove) => {
+    const computerMove = botRef.current.makeMove();
     const result = {
       round: history.length + 1,
       human: humanMove,
-      computer: nextMove(),
+      computer: computerMove,
     };
     updateScore(result.human, result.computer);
-    await updateHistory(result);
+    updateHistory(result);
+    // Update bot learning after the round
+    botRef.current.update(humanMove, computerMove);
   };
 
-  const updateHistory = async (result) => {
+  const updateHistory = (result) => {
     setHistory([...history, result]);
-    if (history.length >= 4) trainModel();
   };
 
   const updateScore = (humanMove, computerMove) => {
@@ -38,79 +33,16 @@ export default function App() {
       2: 1, // scissors beats paper
     };
     if (rules[humanMove] === computerMove) {
-      setScore({ ...score, human: score.human + 1 });
+      setScore((prevScore) => ({ ...prevScore, human: prevScore.human + 1 }));
     } else if (rules[computerMove] == humanMove) {
-      setScore({ ...score, computer: score.computer + 1 });
-    } else {
-      return;
+      setScore((prevScore) => ({ ...prevScore, computer: prevScore.computer + 1 }));
     }
   };
 
   const resetGame = () => {
     setHistory([]);
     setScore({ human: 0, computer: 0 });
-  };
-
-  const nextMove = () => {
-    const vec_len = vectorLength;
-    if (history.length < 8) return Math.floor(Math.random() * 3);
-    else {
-      const inputs = tf.tensor2d([
-        history.slice(-vec_len).flatMap((h) => [h.human, h.computer]),
-      ]);
-      const prediction = model.predict(inputs);
-      if (prediction.max().dataSync()[0] < 0.75) {
-        return Math.floor(Math.random() * 3);
-      }
-      const humanMove = prediction.argMax(-1).dataSync()[0];
-      const computerMove = (humanMove + 1) % 3;
-      return computerMove;
-    }
-  };
-
-  const trainModel = async () => {
-    setIsTraining(true);
-    const vec_len = vector_len();
-    setVectorLength(vec_len);
-    // const units = 8 + history.length / 4;
-    // cast to integer
-    const units = parseInt(6 + history.length / 4);
-    const model_new = tf.sequential();
-    model_new.add(
-      tf.layers.dense({
-        units: units,
-        inputShape: [vec_len * 2],
-        activation: "relu",
-      })
-    );
-    model_new.add(tf.layers.dense({ units: 3, activation: "softmax" }));
-    const compileArgs = {
-      optimizer: tf.train.adam(),
-      loss: "categoricalCrossentropy",
-      metrics: ["accuracy"],
-    };
-    model_new.compile(compileArgs);
-
-    const inputs = history
-      .slice(0, -1)
-      .map((_, i, arr) => arr.slice(i, i + vec_len))
-      .filter((group) => group.length === vec_len)
-      .map((group) => group.flatMap((h) => [h.human, h.computer]))
-      .slice(-200);
-    const targets = tf
-      .oneHot(
-        history.slice(vec_len).map((h) => h.human),
-        3
-      )
-      .arraySync()
-      .slice(-200);
-    if (inputs.length > 8) {
-      const xs = tf.tensor2d(inputs, [inputs.length, vec_len * 2]);
-      const ys = tf.tensor2d(targets, [targets.length, 3]);
-      await model_new.fit(xs, ys, { epochs: 10 });
-    }
-    setModel(model_new);
-    setIsTraining(false);
+    botRef.current.reset();
   };
 
   const getResult = (humanMove, computerMove) => {
@@ -131,10 +63,6 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    // Here you could load initial data if needed
-  }, []);
-
   return (
     <div className="w-full px-4">
       <div className="max-w-3xl mx-auto py-6 space-y-6">
@@ -144,9 +72,6 @@ export default function App() {
             <span className="font-semibold text-2xl">{score.human}</span>
             <span className="font-semibold text-lg">-</span>
             <span className="font-semibold text-2xl">{score.computer}</span>
-            {isTraining && (
-              <span className="font-semibold text-base">Loading ... </span>
-            )}
           </div>
           <Button size="sm" onClick={resetGame}>
             Reset
@@ -154,7 +79,6 @@ export default function App() {
         </div>
         <div className="grid grid-cols-3 gap-4">
           <Button
-            disabled={isTraining}
             className="col-span-1"
             size="lg"
             onClick={() => handleClick(0)}
@@ -162,7 +86,6 @@ export default function App() {
             Rock
           </Button>
           <Button
-            disabled={isTraining}
             className="col-span-1"
             size="lg"
             onClick={() => handleClick(1)}
@@ -170,7 +93,6 @@ export default function App() {
             Paper
           </Button>
           <Button
-            disabled={isTraining}
             className="col-span-1"
             size="lg"
             onClick={() => handleClick(2)}
